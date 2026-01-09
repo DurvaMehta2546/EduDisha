@@ -112,6 +112,11 @@ const Skills = () => {
   const [searchQuery, setSearchQuery] = useState("");
   const [showScheduleDialog, setShowScheduleDialog] = useState(false);
   const [selectedMatch, setSelectedMatch] = useState<typeof skillMatches[0] | null>(null);
+  const [showUpdateSkillsDialog, setShowUpdateSkillsDialog] = useState(false);
+  const [teachSkills, setTeachSkills] = useState(["JavaScript", "React", "CSS"]);
+  const [learnSkills, setLearnSkills] = useState(["Python", "Machine Learning"]);
+  const [newTeachSkill, setNewTeachSkill] = useState("");
+  const [newLearnSkill, setNewLearnSkill] = useState("");
 
   return (
     <DashboardLayout 
@@ -173,17 +178,18 @@ const Skills = () => {
             <h3 className="font-display font-semibold text-foreground mb-2">My Skills Profile</h3>
             <div className="flex flex-wrap gap-2 mb-2">
               <span className="text-sm text-muted-foreground">I can teach:</span>
-              <Badge variant="secondary">JavaScript</Badge>
-              <Badge variant="secondary">React</Badge>
-              <Badge variant="secondary">CSS</Badge>
+              {teachSkills.map((skill) => (
+                <Badge key={skill} variant="secondary">{skill}</Badge>
+              ))}
             </div>
             <div className="flex flex-wrap gap-2">
               <span className="text-sm text-muted-foreground">I want to learn:</span>
-              <Badge className="bg-accent/10 text-accent border-accent/30">Python</Badge>
-              <Badge className="bg-accent/10 text-accent border-accent/30">Machine Learning</Badge>
+              {learnSkills.map((skill) => (
+                <Badge key={skill} className="bg-accent/10 text-accent border-accent/30">{skill}</Badge>
+              ))}
             </div>
           </div>
-          <Button>
+          <Button onClick={() => setShowUpdateSkillsDialog(true)}>
             <Plus className="h-4 w-4 mr-2" />
             Update Skills
           </Button>
@@ -372,6 +378,136 @@ const Skills = () => {
           ))}
         </TabsContent>
       </Tabs>
+
+      {/* Update Skills Dialog */}
+      <Dialog open={showUpdateSkillsDialog} onOpenChange={setShowUpdateSkillsDialog}>
+        <DialogContent className="max-w-2xl">
+          <DialogHeader>
+            <DialogTitle>Update Your Skills</DialogTitle>
+            <DialogDescription>
+              Add or remove skills you can teach and want to learn. This helps us find better matches for you.
+            </DialogDescription>
+          </DialogHeader>
+          <div className="space-y-6 py-4">
+            {/* Skills I Can Teach */}
+            <div>
+              <label className="text-sm font-medium mb-3 block">Skills I Can Teach</label>
+              <div className="flex flex-wrap gap-2 mb-3">
+                {teachSkills.map((skill) => (
+                  <Badge key={skill} variant="secondary" className="px-3 py-1">
+                    {skill}
+                    <button
+                      onClick={() => setTeachSkills(teachSkills.filter(s => s !== skill))}
+                      className="ml-2 text-muted-foreground hover:text-destructive"
+                    >
+                      ×
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Add a skill you can teach..."
+                  value={newTeachSkill}
+                  onChange={(e) => setNewTeachSkill(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && newTeachSkill.trim()) {
+                      setTeachSkills([...teachSkills, newTeachSkill.trim()]);
+                      setNewTeachSkill("");
+                    }
+                  }}
+                />
+                <Button
+                  onClick={() => {
+                    if (newTeachSkill.trim()) {
+                      setTeachSkills([...teachSkills, newTeachSkill.trim()]);
+                      setNewTeachSkill("");
+                    }
+                  }}
+                  variant="outline"
+                >
+                  Add
+                </Button>
+              </div>
+            </div>
+
+            {/* Skills I Want to Learn */}
+            <div>
+              <label className="text-sm font-medium mb-3 block">Skills I Want to Learn</label>
+              <div className="flex flex-wrap gap-2 mb-3">
+                {learnSkills.map((skill) => (
+                  <Badge key={skill} className="bg-accent/10 text-accent border-accent/30 px-3 py-1">
+                    {skill}
+                    <button
+                      onClick={() => setLearnSkills(learnSkills.filter(s => s !== skill))}
+                      className="ml-2 text-muted-foreground hover:text-destructive"
+                    >
+                      ×
+                    </button>
+                  </Badge>
+                ))}
+              </div>
+              <div className="flex gap-2">
+                <Input
+                  placeholder="Add a skill you want to learn..."
+                  value={newLearnSkill}
+                  onChange={(e) => setNewLearnSkill(e.target.value)}
+                  onKeyPress={(e) => {
+                    if (e.key === 'Enter' && newLearnSkill.trim()) {
+                      setLearnSkills([...learnSkills, newLearnSkill.trim()]);
+                      setNewLearnSkill("");
+                    }
+                  }}
+                />
+                <Button
+                  onClick={() => {
+                    if (newLearnSkill.trim()) {
+                      setLearnSkills([...learnSkills, newLearnSkill.trim()]);
+                      setNewLearnSkill("");
+                    }
+                  }}
+                  variant="outline"
+                >
+                  Add
+                </Button>
+              </div>
+            </div>
+
+            {/* Best Skills Section */}
+            <div>
+              <label className="text-sm font-medium mb-3 block">My Best Skills (Top 3)</label>
+              <p className="text-xs text-muted-foreground mb-3">
+                Highlight your strongest skills to attract better learning partners
+              </p>
+              <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                {["Expert", "Advanced", "Intermediate"].map((level, index) => (
+                  <div key={level} className="relative">
+                    <div className="absolute -top-2 -left-2 w-6 h-6 bg-primary rounded-full flex items-center justify-center text-xs font-bold text-primary-foreground">
+                      {index + 1}
+                    </div>
+                    <div className="border-2 border-dashed border-muted-foreground/30 rounded-lg p-4 text-center hover:border-primary/50 transition-colors">
+                      <div className="text-sm font-medium text-muted-foreground">
+                        {level} Level
+                      </div>
+                      <div className="text-xs text-muted-foreground mt-1">
+                        Select from your skills
+                      </div>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+          <div className="flex justify-end gap-2">
+            <Button variant="outline" onClick={() => setShowUpdateSkillsDialog(false)}>
+              Cancel
+            </Button>
+            <Button onClick={() => setShowUpdateSkillsDialog(false)}>
+              Save Changes
+            </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
     </DashboardLayout>
   );
 };

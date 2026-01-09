@@ -2,10 +2,21 @@ import { GraduationCap, Twitter, Linkedin, Github, Mail } from "lucide-react";
 
 const Footer = () => {
   const footerLinks = {
-    Product: ["Features", "FAQ", "Updates", "Support"],
-    Resources: ["Documentation", "API", "Community"],
-    Company: ["About", "Blog", "Careers"],
-    Legal: ["Privacy", "Terms", "Security"],
+    Product: [
+      { name: "Features", href: "/features" },
+      { name: "FAQ", href: "/faq" }
+    ],
+    Resources: [
+      { name: "Blog", href: "/blog" }
+    ],
+    Company: [
+      { name: "About", href: "/about" }
+    ],
+    Legal: [
+      { name: "Privacy", href: "/privacy" },
+      { name: "Terms", href: "/terms" },
+      { name: "Contact", href: "/contact" }
+    ],
   };
 
   return (
@@ -45,12 +56,12 @@ const Footer = () => {
               <h4 className="font-display font-semibold mb-4">{category}</h4>
               <ul className="space-y-3">
                 {links.map((link) => (
-                  <li key={link}>
+                  <li key={link.name}>
                     <a
-                      href="#"
+                      href={link.href}
                       className="text-sidebar-foreground/70 transition-colors hover:text-sidebar-foreground"
                     >
-                      {link}
+                      {link.name}
                     </a>
                   </li>
                 ))}
