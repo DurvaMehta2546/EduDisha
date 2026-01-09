@@ -1,5 +1,5 @@
 import { Button } from "@/components/ui/button";
-import { ArrowRight, Sparkles, Users, BookOpen, Award } from "lucide-react";
+import { ArrowRight, Users, BookOpen, Award } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 const Hero = () => {
@@ -17,57 +17,37 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-hero-gradient neural-bg">
-      {/* Animated Background Elements */}
-      <div className="absolute inset-0 overflow-hidden">
-        <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-secondary/20 blur-3xl animate-float" />
-        <div className="absolute top-1/2 -left-20 h-60 w-60 rounded-full bg-accent/20 blur-3xl animate-float" style={{ animationDelay: '1s' }} />
-        <div className="absolute bottom-20 right-1/4 h-40 w-40 rounded-full bg-primary-foreground/10 blur-2xl animate-float" style={{ animationDelay: '2s' }} />
-        <div className="absolute top-1/4 left-1/3 h-20 w-20 rounded-full bg-primary/30 blur-xl animate-pulse-glow" />
-      </div>
-
-      {/* Grid Pattern Overlay with AI feel */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px] animate-shimmer" />
-
-      <div className="container relative z-10 mx-auto px-4 py-20 lg:py-32">
+    <section className="relative min-h-screen bg-gradient-to-br from-primary/5 via-background to-secondary/5">
+      <div className="container mx-auto px-4 py-20 lg:py-32">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-20 items-center">
           {/* Left Content */}
           <div className="text-center lg:text-left">
-            {/* AI Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-4 py-2 text-sm text-primary-foreground backdrop-blur-sm animate-fade-in-scale interactive-element">
-              <Sparkles className="h-4 w-4 animate-pulse" />
-              <span>AI-Powered Learning Platform</span>
-            </div>
-
-            {/* Headline with AI typing effect */}
-            <h1 className="mt-8 font-display text-4xl font-bold leading-tight text-primary-foreground sm:text-5xl lg:text-6xl xl:text-7xl animate-slide-in-up">
+            <h1 className="font-display text-4xl font-bold leading-tight text-foreground sm:text-5xl lg:text-6xl xl:text-7xl">
               Your Academic
               <br />
-              <span className="text-accent animate-shimmer">Journey,</span>
+              Journey,
               <br />
-              <span className="text-gradient">Simplified</span>
+              Simplified
             </h1>
 
-            {/* Subheadline */}
-            <p className="mt-6 max-w-xl text-lg text-primary-foreground/80 lg:text-xl animate-slide-up delay-200">
-              Organize academics, exchange skills with peers, and never miss a 
+            <p className="mt-6 max-w-xl text-lg text-muted-foreground lg:text-xl">
+              Organize academics, exchange skills with peers, and never miss a
               scholarship deadline. All in one powerful platform.
             </p>
 
             {/* CTA Buttons */}
-            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start animate-slide-up delay-300">
-              <Button 
-                variant="accent" 
-                size="xl" 
+            <div className="mt-10 flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">
+              <Button
+                size="lg"
                 className="group"
                 onClick={() => navigate('/register')}
               >
                 Get Started Free
                 <ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
               </Button>
-              <Button 
-                variant="hero-outline" 
-                size="xl"
+              <Button
+                variant="outline"
+                size="lg"
                 onClick={goToFeatures}
               >
                 Explore Features
@@ -75,17 +55,17 @@ const Hero = () => {
             </div>
 
             {/* Stats */}
-            <div className="mt-12 grid grid-cols-3 gap-6 animate-slide-up delay-400">
+            <div className="mt-12 grid grid-cols-3 gap-6">
               {[
                 { value: "Be one", label: "Students" },
                 { value: "50+", label: "Skills Shared" },
                 { value: "₹50K+", label: "Scholarships" },
               ].map((stat) => (
                 <div key={stat.label} className="text-center lg:text-left">
-                  <div className="font-display text-2xl font-bold text-primary-foreground sm:text-3xl">
+                  <div className="font-display text-2xl font-bold text-foreground sm:text-3xl">
                     {stat.value}
                   </div>
-                  <div className="text-sm text-primary-foreground/60">
+                  <div className="text-sm text-muted-foreground">
                     {stat.label}
                   </div>
                 </div>
@@ -97,7 +77,7 @@ const Hero = () => {
           <div className="relative hidden lg:block">
             <div className="relative space-y-6">
               {/* Card 1 - Academic Dashboard */}
-              <div className="ml-auto w-80 rounded-2xl bg-glass p-6 shadow-card-hover animate-slide-up delay-200 hover:scale-[1.02] transition-transform cursor-pointer" onClick={scrollToDashboard}>
+              <div className="ml-auto w-80 rounded-2xl bg-card p-6 shadow-lg hover:shadow-xl transition-shadow cursor-pointer" onClick={scrollToDashboard}>
                 <div className="flex items-center gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground">
                     <BookOpen className="h-6 w-6" />
@@ -110,7 +90,7 @@ const Hero = () => {
               </div>
 
               {/* Card 2 - Skill Exchange */}
-              <div className="w-80 rounded-2xl bg-glass p-6 shadow-card-hover animate-slide-up delay-300 hover:scale-[1.02] transition-transform cursor-pointer" onClick={scrollToDashboard}>
+              <div className="w-80 rounded-2xl bg-card p-6 shadow-lg hover:shadow-xl transition-shadow cursor-pointer" onClick={scrollToDashboard}>
                 <div className="flex items-center gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-secondary text-secondary-foreground">
                     <Users className="h-6 w-6" />
@@ -123,7 +103,7 @@ const Hero = () => {
               </div>
 
               {/* Card 3 - Scholarships */}
-              <div className="ml-auto w-80 rounded-2xl bg-glass p-6 shadow-card-hover animate-slide-up delay-400 hover:scale-[1.02] transition-transform cursor-pointer" onClick={scrollToDashboard}>
+              <div className="ml-auto w-80 rounded-2xl bg-card p-6 shadow-lg hover:shadow-xl transition-shadow cursor-pointer" onClick={scrollToDashboard}>
                 <div className="flex items-center gap-4">
                   <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-accent text-accent-foreground">
                     <Award className="h-6 w-6" />
@@ -135,9 +115,6 @@ const Hero = () => {
                 </div>
               </div>
             </div>
-
-            {/* Decorative Elements */}
-            <div className="absolute -right-4 top-1/2 h-32 w-32 rounded-full bg-accent/30 blur-3xl" />
           </div>
         </div>
       </div>

@@ -3,7 +3,6 @@ import {
   Users, 
   Award, 
   Bell, 
-  Brain, 
   Calendar,
   FileText,
   Video,
@@ -30,21 +29,21 @@ const features = [
     color: "accent",
   },
   {
-    icon: Brain,
-    title: "AI-Powered Study",
-    description: "Get syllabus summaries, study suggestions, and smart recommendations powered by Gemini AI.",
-    color: "primary",
-  },
-  {
     icon: Calendar,
     title: "Smart Reminders",
     description: "Never miss an exam or deadline. Automatic calendar integration keeps you on track.",
-    color: "secondary",
+    color: "primary",
   },
   {
     icon: Video,
     title: "Google Meet Sessions",
     description: "One-click session creation with auto-generated Meet links for skill exchange.",
+    color: "secondary",
+  },
+  {
+    icon: FileText,
+    title: "Study Resources",
+    description: "Access shared notes, study guides, and learning materials from your peers.",
     color: "accent",
   },
 ];

@@ -28,20 +28,17 @@ const Navbar = () => {
   ];
 
   return (
-    <nav className="fixed top-0 left-0 right-0 z-50 glass border-b border-border/50 backdrop-blur-xl animate-slide-in-up">
+    <nav className="fixed top-0 left-0 right-0 z-50 bg-background/80 backdrop-blur-sm border-b border-border">
       <div className="container mx-auto px-4">
         <div className="flex h-16 items-center justify-between">
-          {/* Logo with AI glow */}
+          {/* Logo */}
           <div className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate('/')}>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-gradient group-hover:scale-110 transition-transform duration-300 animate-pulse-glow">
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
               <GraduationCap className="h-5 w-5 text-primary-foreground" />
             </div>
             <span className="font-display text-xl font-bold text-foreground group-hover:text-primary transition-colors">
               EduDisha
             </span>
-            <div className="hidden sm:block ml-2 px-2 py-1 rounded-full bg-primary/10 text-xs text-primary animate-pulse">
-              AI
-            </div>
           </div>
 
           {/* Desktop Navigation */}

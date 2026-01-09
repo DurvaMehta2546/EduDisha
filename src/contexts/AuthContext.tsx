@@ -23,6 +23,7 @@ interface AuthContextType {
   register: (userData: RegisterData) => Promise<void>;
   logout: () => void;
   updateProfile: (data: Partial<User>) => Promise<void>;
+  completeOnboarding: (data: OnboardingData) => Promise<void>;
 }
 
 interface RegisterData {
@@ -191,6 +192,19 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     localStorage.setItem('edudisha_user', JSON.stringify(updatedUser));
   };
 
+  const completeOnboarding = async (data: OnboardingData) => {
+    if (!user) return;
+
+    const updatedUser: User = {
+      ...user,
+      onboardingCompleted: true,
+      onboardingData: data,
+      name: data.name || user.name
+    };
+    setUser(updatedUser);
+    localStorage.setItem('edudisha_user', JSON.stringify(updatedUser));
+  };
+
   const value = {
     user,
     isLoading,
@@ -200,7 +214,8 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     loginWithGitHub,
     register,
     logout,
-    updateProfile
+    updateProfile,
+    completeOnboarding
   };
 
   return (

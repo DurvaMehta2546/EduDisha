@@ -22,9 +22,13 @@ import {
   Plus,
   ArrowRight,
   MessageSquare,
-  CheckCircle
+  CheckCircle,
+  Send,
+  Languages,
+  Globe
 } from "lucide-react";
 import { cn } from "@/lib/utils";
+import { translateText } from "@/lib/translation";
 
 const skillMatches = [
   {
@@ -117,6 +121,72 @@ const Skills = () => {
   const [learnSkills, setLearnSkills] = useState(["Python", "Machine Learning"]);
   const [newTeachSkill, setNewTeachSkill] = useState("");
   const [newLearnSkill, setNewLearnSkill] = useState("");
+  const [showChatDialog, setShowChatDialog] = useState(false);
+  const [chatMessages, setChatMessages] = useState<{[key: string]: Array<{id: string, sender: string, message: string, timestamp: Date, translated?: string}>}>({});
+  const [currentMessage, setCurrentMessage] = useState("");
+  const [selectedLanguage, setSelectedLanguage] = useState("en");
+  const handleSendMessage = async () => {
+    if (!currentMessage.trim() || !selectedMatch) return;
+
+    const userMessage = {
+      id: Date.now().toString(),
+      sender: 'user',
+      message: currentMessage,
+      timestamp: new Date()
+    };
+
+    setChatMessages(prev => ({
+      ...prev,
+      [selectedMatch.id]: [...(prev[selectedMatch.id] || []), userMessage]
+    }));
+
+    setCurrentMessage("");
+
+    // Handle translation
+    if (selectedLanguage !== 'en') {
+      setIsTranslating(true);
+      try {
+        const translated = await translateText({
+          from: 'en', // Assuming user inputs in English for now
+          to: selectedLanguage,
+          text: currentMessage
+        });
+        setChatMessages(prev => ({
+          ...prev,
+          [selectedMatch.id]: prev[selectedMatch.id].map(msg =>
+            msg.id === userMessage.id ? { ...msg, translated } : msg
+          )
+        }));
+      } catch (error) {
+        console.error('Translation failed:', error);
+      } finally {
+        setIsTranslating(false);
+      }
+    }
+
+    // Simulate peer response
+    setTimeout(() => {
+      const responses = [
+        "Hey! I'd love to help you with that skill. When are you available?",
+        "That sounds interesting! I can teach you what you need.",
+        "Great match! Let's schedule a session soon.",
+        "I'm excited to exchange skills with you!",
+        "Perfect! I have some free time this week."
+      ];
+
+      const peerResponse = {
+        id: (Date.now() + 1).toString(),
+        sender: selectedMatch.name.toLowerCase().replace(' ', ''),
+        message: responses[Math.floor(Math.random() * responses.length)],
+        timestamp: new Date()
+      };
+
+      setChatMessages(prev => ({
+        ...prev,
+        [selectedMatch.id]: [...(prev[selectedMatch.id] || []), peerResponse]
+      }));
+    }, 2000 + Math.random() * 3000);
+  };
 
   return (
     <DashboardLayout 
@@ -297,7 +367,26 @@ const Skills = () => {
                           </div>
                         </DialogContent>
                       </Dialog>
-                      <Button size="sm" variant="outline">
+                      <Button 
+                        size="sm" 
+                        variant="outline"
+                        onClick={() => {
+                          setSelectedMatch(match);
+                          setShowChatDialog(true);
+                          // Initialize chat if not exists
+                          if (!chatMessages[match.id]) {
+                            setChatMessages(prev => ({
+                              ...prev,
+                              [match.id]: [{
+                                id: '1',
+                                sender: 'system',
+                                message: `You matched with ${match.name}! Start a conversation to schedule your skill exchange session.`,
+                                timestamp: new Date()
+                              }]
+                            }));
+                          }
+                        }}
+                      >
                         <MessageSquare className="h-4 w-4" />
                       </Button>
                     </div>
@@ -505,6 +594,111 @@ const Skills = () => {
             <Button onClick={() => setShowUpdateSkillsDialog(false)}>
               Save Changes
             </Button>
+          </div>
+        </DialogContent>
+      </Dialog>
+
+      {/* Chat Dialog */}
+      <Dialog open={showChatDialog} onOpenChange={setShowChatDialog}>
+        <DialogContent className="max-w-2xl h-[600px] flex flex-col">
+          <DialogHeader className="flex-shrink-0">
+            <DialogTitle className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-full bg-secondary text-secondary-foreground font-semibold">
+                {selectedMatch?.avatar}
+              </div>
+              <div>
+                <div>Chat with {selectedMatch?.name}</div>
+                <div className="text-sm font-normal text-muted-foreground">
+                  Skill Exchange Partner
+                </div>
+              </div>
+            </DialogTitle>
+          </DialogHeader>
+
+          {/* Language Selector */}
+          <div className="flex items-center gap-2 px-6 py-2 border-b">
+            <Globe className="h-4 w-4 text-muted-foreground" />
+            <select
+              value={selectedLanguage}
+              onChange={(e) => setSelectedLanguage(e.target.value)}
+              className="text-sm bg-transparent border-none outline-none"
+            >
+              <option value="en">English</option>
+              <option value="hi">हिंदी (Hindi)</option>
+              <option value="gu">ગુજરાતી (Gujarati)</option>
+            </select>
+            {isTranslating && <div className="text-xs text-muted-foreground">Translating...</div>}
+          </div>
+
+          {/* Messages */}
+          <ScrollArea className="flex-1 p-4">
+            <div className="space-y-4">
+              {(chatMessages[selectedMatch?.id || ''] || []).map((message) => (
+                <div
+                  key={message.id}
+                  className={`flex gap-3 ${message.sender === 'user' ? 'justify-end' : 'justify-start'}`}
+                >
+                  {message.sender !== 'user' && message.sender !== 'system' && (
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-secondary text-secondary-foreground text-sm font-semibold flex-shrink-0">
+                      {selectedMatch?.avatar}
+                    </div>
+                  )}
+                  <div className={`max-w-[70%] ${message.sender === 'user' ? 'order-first' : ''}`}>
+                    <div
+                      className={`rounded-2xl px-4 py-2 text-sm ${
+                        message.sender === 'user'
+                          ? 'bg-primary text-primary-foreground'
+                          : message.sender === 'system'
+                          ? 'bg-muted text-muted-foreground text-center'
+                          : 'bg-muted'
+                      }`}
+                    >
+                      <p>{message.message}</p>
+                      {message.translated && selectedLanguage !== 'en' && (
+                        <p className="text-xs mt-1 opacity-75 border-t pt-1">
+                          {message.translated}
+                        </p>
+                      )}
+                    </div>
+                    <div className="text-xs text-muted-foreground mt-1 px-2">
+                      {message.timestamp.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                    </div>
+                  </div>
+                  {message.sender === 'user' && (
+                    <div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary text-primary-foreground text-sm font-semibold flex-shrink-0">
+                      U
+                    </div>
+                  )}
+                </div>
+              ))}
+            </div>
+          </ScrollArea>
+
+          {/* Message Input */}
+          <div className="flex-shrink-0 p-4 border-t">
+            <div className="flex gap-2">
+              <input
+                type="text"
+                value={currentMessage}
+                onChange={(e) => setCurrentMessage(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSendMessage();
+                  }
+                }}
+                placeholder={`Type a message in ${selectedLanguage === 'en' ? 'English' : selectedLanguage === 'hi' ? 'Hindi' : 'Gujarati'}...`}
+                className="flex-1 px-4 py-2 border border-border rounded-full focus:outline-none focus:ring-2 focus:ring-primary"
+              />
+              <Button
+                onClick={handleSendMessage}
+                disabled={!currentMessage.trim()}
+                size="sm"
+                className="rounded-full px-4"
+              >
+                <Send className="h-4 w-4" />
+              </Button>
+            </div>
           </div>
         </DialogContent>
       </Dialog>

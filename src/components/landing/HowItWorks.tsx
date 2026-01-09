@@ -22,8 +22,8 @@ const steps = [
   {
     number: "04",
     title: "Never Miss Scholarships",
-    description: "Browse curated scholarships, check eligibility with AI, and set calendar reminders for deadlines.",
-    highlights: ["Curated Database", "AI Eligibility Check", "Smart Reminders"],
+    description: "Browse curated scholarships, check eligibility, and set calendar reminders for deadlines.",
+    highlights: ["Curated Database", "Eligibility Check", "Smart Reminders"],
   },
 ];
 
@@ -37,8 +37,7 @@ const HowItWorks = () => {
             How It Works
           </span>
           <h2 className="font-display text-3xl font-bold text-foreground sm:text-4xl lg:text-5xl">
-            Get Started in
-            <span className="text-gradient"> 4 Simple Steps</span>
+            Get Started in 4 Simple Steps
           </h2>
           <p className="mt-4 text-lg text-muted-foreground">
             From sign-up to success, we've made every step intuitive and fast.
