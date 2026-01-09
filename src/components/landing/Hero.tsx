@@ -17,34 +17,35 @@ const Hero = () => {
   };
 
   return (
-    <section className="relative min-h-screen overflow-hidden bg-hero-gradient">
+    <section className="relative min-h-screen overflow-hidden bg-hero-gradient neural-bg">
       {/* Animated Background Elements */}
       <div className="absolute inset-0 overflow-hidden">
         <div className="absolute -top-40 -right-40 h-80 w-80 rounded-full bg-secondary/20 blur-3xl animate-float" />
-        <div className="absolute top-1/2 -left-20 h-60 w-60 rounded-full bg-accent/20 blur-3xl animate-float delay-300" />
-        <div className="absolute bottom-20 right-1/4 h-40 w-40 rounded-full bg-primary-foreground/10 blur-2xl animate-float delay-500" />
+        <div className="absolute top-1/2 -left-20 h-60 w-60 rounded-full bg-accent/20 blur-3xl animate-float" style={{ animationDelay: '1s' }} />
+        <div className="absolute bottom-20 right-1/4 h-40 w-40 rounded-full bg-primary-foreground/10 blur-2xl animate-float" style={{ animationDelay: '2s' }} />
+        <div className="absolute top-1/4 left-1/3 h-20 w-20 rounded-full bg-primary/30 blur-xl animate-pulse-glow" />
       </div>
 
-      {/* Grid Pattern Overlay */}
-      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px]" />
+      {/* Grid Pattern Overlay with AI feel */}
+      <div className="absolute inset-0 bg-[linear-gradient(rgba(255,255,255,0.03)_1px,transparent_1px),linear-gradient(90deg,rgba(255,255,255,0.03)_1px,transparent_1px)] bg-[size:60px_60px] animate-shimmer" />
 
       <div className="container relative z-10 mx-auto px-4 py-20 lg:py-32">
         <div className="grid gap-12 lg:grid-cols-2 lg:gap-20 items-center">
           {/* Left Content */}
           <div className="text-center lg:text-left">
-            {/* Badge */}
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-4 py-2 text-sm text-primary-foreground backdrop-blur-sm animate-slide-up">
-              <Sparkles className="h-4 w-4" />
-              <span>Built for GTU Students</span>
+            {/* AI Badge */}
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary-foreground/20 bg-primary-foreground/10 px-4 py-2 text-sm text-primary-foreground backdrop-blur-sm animate-fade-in-scale interactive-element">
+              <Sparkles className="h-4 w-4 animate-pulse" />
+              <span>AI-Powered Learning Platform</span>
             </div>
 
-            {/* Headline */}
-            <h1 className="mt-8 font-display text-4xl font-bold leading-tight text-primary-foreground sm:text-5xl lg:text-6xl xl:text-7xl animate-slide-up delay-100">
+            {/* Headline with AI typing effect */}
+            <h1 className="mt-8 font-display text-4xl font-bold leading-tight text-primary-foreground sm:text-5xl lg:text-6xl xl:text-7xl animate-slide-in-up">
               Your Academic
               <br />
-              <span className="text-accent">Journey,</span>
+              <span className="text-accent animate-shimmer">Journey,</span>
               <br />
-              Simplified
+              <span className="text-gradient">Simplified</span>
             </h1>
 
             {/* Subheadline */}
