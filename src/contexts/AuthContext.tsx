@@ -1,5 +1,5 @@
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { authService, RegisterData, LoginData } from '@/services/auth.service';
+import { authService, RegisterData } from '@/services/auth.service';
 import { profileService } from '@/services/profile.service';
 
 export interface User {
@@ -25,7 +25,6 @@ interface AuthContextType {
   register: (userData: RegisterData) => Promise<void>;
   logout: () => void;
   updateProfile: (data: Partial<User>) => Promise<void>;
-  completeOnboarding: (data: OnboardingData) => Promise<void>;
 }
 
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
@@ -125,19 +124,6 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     }
   };
 
-  const completeOnboarding = async (data: OnboardingData) => {
-    if (!user) return;
-
-    const updatedUser: User = {
-      ...user,
-      onboardingCompleted: true,
-      onboardingData: data,
-      name: data.name || user.name
-    };
-    setUser(updatedUser);
-    localStorage.setItem('edudisha_user', JSON.stringify(updatedUser));
-  };
-
   const value = {
     user,
     isLoading,
@@ -147,8 +133,7 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     loginWithGitHub,
     register,
     logout,
-    updateProfile,
-    completeOnboarding
+    updateProfile
   };
 
   return (

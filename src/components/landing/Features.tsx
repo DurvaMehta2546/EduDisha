@@ -6,7 +6,8 @@ import {
   Calendar,
   FileText,
   Video,
-  Star
+  Star,
+  Brain
 } from "lucide-react";
 
 const features = [
