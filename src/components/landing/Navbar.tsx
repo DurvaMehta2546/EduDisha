@@ -33,8 +33,12 @@ const Navbar = () => {
         <div className="flex h-16 items-center justify-between">
           {/* Logo */}
           <div className="flex items-center gap-2 cursor-pointer group" onClick={() => navigate('/')}>
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary">
-              <GraduationCap className="h-5 w-5 text-primary-foreground" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-accent/15 border border-primary/30">
+              <img 
+                src="/logo.svg" 
+                alt="EduDisha Logo" 
+                className="h-8 w-8 transition-transform group-hover:scale-110" 
+              />
             </div>
             <span className="font-display text-xl font-bold text-foreground group-hover:text-primary transition-colors">
               EduDisha

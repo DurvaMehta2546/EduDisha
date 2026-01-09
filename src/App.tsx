@@ -15,6 +15,7 @@ import SmartDashboard from "@/components/dashboard/SmartDashboard";
 import Academics from "./pages/Academics";
 import Skills from "./pages/Skills";
 import Scholarships from "./pages/Scholarships";
+import Profile from "./pages/Profile";
 import Motivation from "./pages/Motivation";
 import Notifications from "./pages/Notifications";
 import Settings from "./pages/Settings";
@@ -72,6 +73,11 @@ const App = () => (
             <Route path="/scholarships" element={
               <ProtectedRoute>
                 <Scholarships />
+              </ProtectedRoute>
+            } />
+            <Route path="/profile" element={
+              <ProtectedRoute>
+                <Profile />
               </ProtectedRoute>
             } />
             <Route path="/motivation" element={

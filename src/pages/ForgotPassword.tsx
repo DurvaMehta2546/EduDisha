@@ -46,8 +46,12 @@ const ForgotPassword = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-gradient">
-              <GraduationCap className="h-6 w-6 text-primary-foreground" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-accent/15 border border-primary/30">
+              <img 
+                src="/logo.svg" 
+                alt="EduDisha Logo" 
+                className="h-8 w-8" 
+              />
             </div>
             <h1 className="font-display text-2xl font-bold text-foreground">EduDisha</h1>
           </div>

@@ -26,8 +26,12 @@ const Footer = () => {
           {/* Brand Column */}
           <div className="lg:col-span-2">
             <div className="flex items-center gap-2 mb-4">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-gradient">
-                <GraduationCap className="h-5 w-5 text-primary-foreground" />
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-accent/15 border border-primary/30">
+                <img 
+                  src="/logo.svg" 
+                  alt="EduDisha Logo" 
+                  className="h-6 w-6" 
+                />
               </div>
               <span className="font-display text-xl font-bold">
                 EduDisha

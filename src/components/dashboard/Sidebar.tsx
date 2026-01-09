@@ -11,7 +11,8 @@ import {
   LogOut,
   ChevronLeft,
   ChevronRight,
-  Sparkles
+  Sparkles,
+  User
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/button";
@@ -22,6 +23,7 @@ const menuItems = [
   { icon: BookOpen, label: "Academics", path: "/academics" },
   { icon: Users, label: "Skill Exchange", path: "/skills" },
   { icon: Award, label: "Scholarships", path: "/scholarships" },
+  { icon: User, label: "Profile", path: "/profile" },
   { icon: Bell, label: "Notifications", path: "/notifications" },
   { icon: Settings, label: "Settings", path: "/settings" },
 ];
@@ -48,8 +50,12 @@ const Sidebar = () => {
         {/* Logo */}
         <div className="flex h-16 items-center justify-between px-4 border-b border-sidebar-border">
           <div className="flex items-center gap-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary-gradient flex-shrink-0">
-              <GraduationCap className="h-5 w-5 text-primary-foreground" />
+            <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-gradient-to-br from-primary/25 to-accent/25 border border-primary/40 flex-shrink-0">
+              <img 
+                src="/logo.svg" 
+                alt="EduDisha Logo" 
+                className="h-6 w-6" 
+              />
             </div>
             {!collapsed && (
               <span className="font-display text-lg font-bold">EduDisha</span>

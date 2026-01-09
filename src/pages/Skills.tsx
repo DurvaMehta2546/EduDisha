@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import {
   Dialog,
   DialogContent,
@@ -35,46 +36,98 @@ const skillMatches = [
     id: 1,
     name: "Priya Patel",
     avatar: "PP",
-    teaches: ["React", "JavaScript"],
-    wants: ["Python", "Machine Learning"],
+    teaches: ["React", "JavaScript", "TypeScript"],
+    wants: ["Python", "Machine Learning", "Data Science"],
     rating: 4.8,
     sessions: 12,
-    availability: ["Mon 4-6 PM", "Wed 5-7 PM"],
+    availability: ["Mon 4-6 PM", "Wed 5-7 PM", "Fri 3-5 PM"],
     matchScore: 95,
+    university: "GTU",
+    semester: "6th",
+    branch: "Computer Engineering",
+    isOnline: true,
+    lastSeen: "2 minutes ago"
   },
   {
     id: 2,
     name: "Amit Shah",
     avatar: "AS",
-    teaches: ["Data Structures", "Algorithms"],
-    wants: ["Web Development", "React"],
+    teaches: ["Data Structures", "Algorithms", "C++"],
+    wants: ["Web Development", "React", "Node.js"],
     rating: 4.9,
     sessions: 24,
-    availability: ["Tue 3-5 PM", "Thu 4-6 PM"],
+    availability: ["Tue 3-5 PM", "Thu 4-6 PM", "Sat 10 AM-12 PM"],
     matchScore: 88,
+    university: "GTU",
+    semester: "7th",
+    branch: "Information Technology",
+    isOnline: false,
+    lastSeen: "1 hour ago"
   },
   {
     id: 3,
     name: "Neha Sharma",
     avatar: "NS",
-    teaches: ["Python", "Django"],
-    wants: ["JavaScript", "Node.js"],
+    teaches: ["Python", "Django", "Flask"],
+    wants: ["JavaScript", "Node.js", "MongoDB"],
     rating: 4.7,
     sessions: 8,
     availability: ["Mon 6-8 PM", "Fri 4-6 PM"],
     matchScore: 82,
+    university: "GTU",
+    semester: "5th",
+    branch: "Computer Engineering",
+    isOnline: true,
+    lastSeen: "Just now"
   },
   {
     id: 4,
     name: "Rahul Verma",
     avatar: "RV",
-    teaches: ["Machine Learning", "TensorFlow"],
-    wants: ["Flutter", "Mobile Development"],
+    teaches: ["Machine Learning", "TensorFlow", "Python"],
+    wants: ["Flutter", "Mobile Development", "Dart"],
     rating: 4.6,
     sessions: 15,
     availability: ["Wed 3-5 PM", "Sat 10 AM-12 PM"],
     matchScore: 75,
+    university: "GTU",
+    semester: "8th",
+    branch: "Computer Engineering",
+    isOnline: true,
+    lastSeen: "5 minutes ago"
   },
+  {
+    id: 5,
+    name: "Kavya Joshi",
+    avatar: "KJ",
+    teaches: ["UI/UX Design", "Figma", "Adobe XD"],
+    wants: ["Frontend Development", "CSS", "JavaScript"],
+    rating: 4.9,
+    sessions: 18,
+    availability: ["Mon 2-4 PM", "Thu 6-8 PM"],
+    matchScore: 70,
+    university: "GTU",
+    semester: "6th",
+    branch: "Information Technology",
+    isOnline: false,
+    lastSeen: "30 minutes ago"
+  },
+  {
+    id: 6,
+    name: "Arjun Patel",
+    avatar: "AP",
+    teaches: ["Java", "Spring Boot", "Microservices"],
+    wants: ["DevOps", "Docker", "Kubernetes"],
+    rating: 4.5,
+    sessions: 10,
+    availability: ["Tue 5-7 PM", "Sun 11 AM-1 PM"],
+    matchScore: 68,
+    university: "GTU",
+    semester: "7th",
+    branch: "Computer Engineering",
+    isOnline: true,
+    lastSeen: "Just now"
+  }
 ];
 
 const upcomingSessions = [
@@ -125,6 +178,7 @@ const Skills = () => {
   const [chatMessages, setChatMessages] = useState<{[key: string]: Array<{id: string, sender: string, message: string, timestamp: Date, translated?: string}>}>({});
   const [currentMessage, setCurrentMessage] = useState("");
   const [selectedLanguage, setSelectedLanguage] = useState("en");
+  const [isTranslating, setIsTranslating] = useState(false);
   const handleSendMessage = async () => {
     if (!currentMessage.trim() || !selectedMatch) return;
 
@@ -286,115 +340,168 @@ const Skills = () => {
           </div>
 
           {/* Matches Grid */}
-          <div className="grid gap-4 md:grid-cols-2">
-            {skillMatches.map((match) => (
+          <div className="grid gap-6 lg:grid-cols-2 xl:grid-cols-3">
+            {skillMatches
+              .filter(match => 
+                searchQuery === "" || 
+                match.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+                match.teaches.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase())) ||
+                match.wants.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()))
+              )
+              .map((match) => (
               <div
                 key={match.id}
-                className="rounded-2xl border border-border bg-card p-6 transition-all duration-200 hover:border-secondary/50 hover:shadow-card"
+                className="rounded-2xl border border-border bg-card p-6 transition-all duration-200 hover:border-secondary/50 hover:shadow-lg hover:scale-[1.02]"
               >
-                <div className="flex items-start gap-4">
-                  <div className="flex h-14 w-14 items-center justify-center rounded-full bg-secondary text-secondary-foreground font-semibold text-lg flex-shrink-0">
-                    {match.avatar}
+                <div className="flex items-start gap-4 mb-4">
+                  <div className="relative">
+                    <div className="flex h-16 w-16 items-center justify-center rounded-full bg-gradient-to-br from-secondary to-secondary/80 text-secondary-foreground font-bold text-lg flex-shrink-0 shadow-md">
+                      {match.avatar}
+                    </div>
+                    <div className={cn(
+                      "absolute -bottom-1 -right-1 w-5 h-5 rounded-full border-2 border-card",
+                      match.isOnline ? "bg-green-500" : "bg-gray-400"
+                    )} />
                   </div>
                   <div className="flex-1 min-w-0">
                     <div className="flex items-center justify-between mb-1">
-                      <h4 className="font-display font-semibold text-foreground">{match.name}</h4>
-                      <span className="text-xs px-2 py-1 rounded-full bg-success/10 text-success font-medium">
+                      <h4 className="font-display font-semibold text-foreground text-lg">{match.name}</h4>
+                      <span className="text-xs px-3 py-1 rounded-full bg-gradient-to-r from-success/20 to-success/10 text-success font-medium border border-success/30">
                         {match.matchScore}% match
                       </span>
                     </div>
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-3">
+                    <div className="text-xs text-muted-foreground mb-2">
+                      {match.university} • {match.semester} Sem • {match.branch}
+                    </div>
+                    <div className="flex items-center gap-2 text-sm text-muted-foreground mb-1">
                       <Star className="h-4 w-4 text-accent fill-accent" />
-                      <span>{match.rating}</span>
+                      <span className="font-medium">{match.rating}</span>
                       <span>•</span>
                       <span>{match.sessions} sessions</span>
-                    </div>
-
-                    <div className="space-y-2 mb-4">
-                      <div className="flex flex-wrap gap-1">
-                        <span className="text-xs text-muted-foreground mr-1">Teaches:</span>
-                        {match.teaches.map((skill) => (
-                          <Badge key={skill} variant="secondary" className="text-xs">{skill}</Badge>
-                        ))}
-                      </div>
-                      <div className="flex flex-wrap gap-1">
-                        <span className="text-xs text-muted-foreground mr-1">Wants:</span>
-                        {match.wants.map((skill) => (
-                          <Badge key={skill} className="bg-accent/10 text-accent border-accent/30 text-xs">{skill}</Badge>
-                        ))}
-                      </div>
-                    </div>
-
-                    <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4">
-                      <Clock className="h-3 w-3" />
-                      <span>{match.availability.join(" | ")}</span>
-                    </div>
-
-                    <div className="flex gap-2">
-                      <Dialog open={showScheduleDialog && selectedMatch?.id === match.id} onOpenChange={(open) => {
-                        setShowScheduleDialog(open);
-                        if (open) setSelectedMatch(match);
-                      }}>
-                        <DialogTrigger asChild>
-                          <Button size="sm" className="flex-1">
-                            <Video className="h-4 w-4 mr-2" />
-                            Schedule Session
-                          </Button>
-                        </DialogTrigger>
-                        <DialogContent>
-                          <DialogHeader>
-                            <DialogTitle>Schedule Session with {match.name}</DialogTitle>
-                            <DialogDescription>
-                              Choose a time slot and a Google Meet link will be generated automatically.
-                            </DialogDescription>
-                          </DialogHeader>
-                          <div className="space-y-4 py-4">
-                            <div>
-                              <label className="text-sm font-medium">Available Slots</label>
-                              <div className="grid grid-cols-2 gap-2 mt-2">
-                                {match.availability.map((slot) => (
-                                  <Button key={slot} variant="outline" className="justify-start">
-                                    <Calendar className="h-4 w-4 mr-2" />
-                                    {slot}
-                                  </Button>
-                                ))}
-                              </div>
-                            </div>
-                            <Button className="w-full">
-                              Create Session
-                              <ArrowRight className="h-4 w-4 ml-2" />
-                            </Button>
-                          </div>
-                        </DialogContent>
-                      </Dialog>
-                      <Button 
-                        size="sm" 
-                        variant="outline"
-                        onClick={() => {
-                          setSelectedMatch(match);
-                          setShowChatDialog(true);
-                          // Initialize chat if not exists
-                          if (!chatMessages[match.id]) {
-                            setChatMessages(prev => ({
-                              ...prev,
-                              [match.id]: [{
-                                id: '1',
-                                sender: 'system',
-                                message: `You matched with ${match.name}! Start a conversation to schedule your skill exchange session.`,
-                                timestamp: new Date()
-                              }]
-                            }));
-                          }
-                        }}
-                      >
-                        <MessageSquare className="h-4 w-4" />
-                      </Button>
+                      <span>•</span>
+                      <span className={cn(
+                        "text-xs",
+                        match.isOnline ? "text-green-600" : "text-muted-foreground"
+                      )}>
+                        {match.isOnline ? "Online" : match.lastSeen}
+                      </span>
                     </div>
                   </div>
+                </div>
+
+                <div className="space-y-3 mb-4">
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-2 h-2 bg-secondary rounded-full"></div>
+                      <span className="text-xs font-medium text-muted-foreground">Can Teach</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {match.teaches.map((skill) => (
+                        <Badge key={skill} variant="secondary" className="text-xs px-2 py-1">{skill}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                  <div>
+                    <div className="flex items-center gap-2 mb-2">
+                      <div className="w-2 h-2 bg-accent rounded-full"></div>
+                      <span className="text-xs font-medium text-muted-foreground">Wants to Learn</span>
+                    </div>
+                    <div className="flex flex-wrap gap-1">
+                      {match.wants.map((skill) => (
+                        <Badge key={skill} className="bg-accent/10 text-accent border-accent/30 text-xs px-2 py-1">{skill}</Badge>
+                      ))}
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex items-center gap-2 text-xs text-muted-foreground mb-4 p-2 bg-muted/30 rounded-lg">
+                  <Clock className="h-3 w-3 flex-shrink-0" />
+                  <span className="truncate">{match.availability.slice(0, 2).join(" • ")}</span>
+                  {match.availability.length > 2 && (
+                    <span className="text-primary">+{match.availability.length - 2} more</span>
+                  )}
+                </div>
+
+                <div className="flex gap-2">
+                  <Dialog open={showScheduleDialog && selectedMatch?.id === match.id} onOpenChange={(open) => {
+                    setShowScheduleDialog(open);
+                    if (open) setSelectedMatch(match);
+                  }}>
+                    <DialogTrigger asChild>
+                      <Button size="sm" className="flex-1 bg-gradient-to-r from-primary to-primary/80 hover:from-primary/90 hover:to-primary/70">
+                        <Video className="h-4 w-4 mr-2" />
+                        Schedule
+                      </Button>
+                    </DialogTrigger>
+                    <DialogContent className="max-w-md">
+                      <DialogHeader>
+                        <DialogTitle>Schedule Session with {match.name}</DialogTitle>
+                        <DialogDescription>
+                          Choose a time slot and a Google Meet link will be generated automatically.
+                        </DialogDescription>
+                      </DialogHeader>
+                      <div className="space-y-4 py-4">
+                        <div>
+                          <label className="text-sm font-medium mb-3 block">Available Slots</label>
+                          <div className="space-y-2">
+                            {match.availability.map((slot) => (
+                              <Button key={slot} variant="outline" className="w-full justify-start hover:bg-primary/5 hover:border-primary/30">
+                                <Calendar className="h-4 w-4 mr-2" />
+                                {slot}
+                              </Button>
+                            ))}
+                          </div>
+                        </div>
+                        <Button className="w-full bg-gradient-to-r from-primary to-primary/80">
+                          Create Session
+                          <ArrowRight className="h-4 w-4 ml-2" />
+                        </Button>
+                      </div>
+                    </DialogContent>
+                  </Dialog>
+                  <Button 
+                    size="sm" 
+                    variant="outline"
+                    className="hover:bg-secondary/10 hover:border-secondary/30"
+                    onClick={() => {
+                      setSelectedMatch(match);
+                      setShowChatDialog(true);
+                      // Initialize chat if not exists
+                      if (!chatMessages[match.id]) {
+                        setChatMessages(prev => ({
+                          ...prev,
+                          [match.id]: [{
+                            id: '1',
+                            sender: 'system',
+                            message: `You matched with ${match.name}! Start a conversation to schedule your skill exchange session.`,
+                            timestamp: new Date()
+                          }]
+                        }));
+                      }
+                    }}
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                  </Button>
                 </div>
               </div>
             ))}
           </div>
+
+          {/* No Results */}
+          {skillMatches.filter(match => 
+            searchQuery === "" || 
+            match.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
+            match.teaches.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase())) ||
+            match.wants.some(skill => skill.toLowerCase().includes(searchQuery.toLowerCase()))
+          ).length === 0 && (
+            <div className="text-center py-12">
+              <div className="w-16 h-16 bg-muted rounded-full flex items-center justify-center mx-auto mb-4">
+                <Search className="h-8 w-8 text-muted-foreground" />
+              </div>
+              <h3 className="font-display text-lg font-semibold text-foreground mb-2">No matches found</h3>
+              <p className="text-muted-foreground">Try adjusting your search terms or update your skills profile.</p>
+            </div>
+          )}
         </TabsContent>
 
         <TabsContent value="upcoming" className="space-y-4">

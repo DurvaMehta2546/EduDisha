@@ -3,6 +3,8 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Avatar, AvatarFallback } from "@/components/ui/avatar";
+import { useAuth } from "@/contexts/AuthContext";
+import { aiProfileService } from "@/services/aiProfile.service";
 import {
   MessageCircle,
   X,
@@ -24,20 +26,46 @@ interface Message {
 }
 
 const AIAssistant = () => {
+  const { user } = useAuth();
   const [isOpen, setIsOpen] = useState(false);
   const [isMinimized, setIsMinimized] = useState(false);
-  const [messages, setMessages] = useState<Message[]>([
-    {
-      id: '1',
-      content: "Hi! I'm EduBot, your AI learning assistant. I'm here to help you with any questions about academics, skills, scholarships, or anything related to your GTU journey. How can I assist you today?",
-      sender: 'ai',
-      timestamp: new Date(),
-    }
-  ]);
+  const [messages, setMessages] = useState<Message[]>([]);
   const [inputValue, setInputValue] = useState('');
   const [isTyping, setIsTyping] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef<HTMLInputElement>(null);
+
+  // Initialize with personalized greeting
+  useEffect(() => {
+    if (user?.id) {
+      const greeting = aiProfileService.getPersonalizedGreeting(user.id);
+      const hasProfile = aiProfileService.hasProfile(user.id);
+      
+      let initialMessage = greeting;
+      if (!hasProfile) {
+        initialMessage += "\n\nI notice you haven't completed your profile yet. Complete it in the Profile tab so I can provide personalized assistance based on your learning style and preferences!";
+      } else {
+        const recommendations = aiProfileService.getStudyRecommendations(user.id);
+        if (recommendations.length > 0) {
+          initialMessage += "\n\n" + recommendations[0];
+        }
+      }
+
+      setMessages([{
+        id: '1',
+        content: initialMessage,
+        sender: 'ai',
+        timestamp: new Date(),
+      }]);
+    } else {
+      setMessages([{
+        id: '1',
+        content: "Hi! I'm EduBot, your AI learning assistant. Please log in to get personalized assistance based on your learning preferences.",
+        sender: 'ai',
+        timestamp: new Date(),
+      }]);
+    }
+  }, [user]);
 
   const scrollToBottom = () => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -82,28 +110,119 @@ const AIAssistant = () => {
 
   const generateAIResponse = (userInput: string): string => {
     const input = userInput.toLowerCase();
+    
+    // Get user profile for personalized responses
+    const profile = user?.id ? aiProfileService.getStudentProfile(user.id) : null;
+    const commPrefs = user?.id ? aiProfileService.getCommunicationPreferences(user.id) : null;
+    
+    // Personalize response based on communication preferences
+    let responsePrefix = "";
+    if (profile) {
+      const name = profile.studentProfile.personalInfo.name;
+      if (commPrefs?.tone === 'Chill') {
+        responsePrefix = `Hey ${name}! `;
+      } else if (commPrefs?.tone === 'Motivated') {
+        responsePrefix = `${name}, let's tackle this! `;
+      } else if (commPrefs?.tone === 'Funny') {
+        responsePrefix = `${name}, great question! 😄 `;
+      } else {
+        responsePrefix = `${name}, `;
+      }
+    }
+
+    if (input.includes('profile') || input.includes('complete profile')) {
+      if (!profile) {
+        return responsePrefix + "I'd love to help you better! Please complete your profile in the Profile tab. It helps me understand your learning style, communication preferences, and goals so I can provide personalized assistance.";
+      } else {
+        return responsePrefix + "Great! I can see your profile is complete. This helps me provide personalized responses based on your learning style and preferences. Is there anything specific you'd like to update?";
+      }
+    }
 
     if (input.includes('scholarship') || input.includes('scholarships')) {
-      return "Great question about scholarships! EduDisha has a comprehensive scholarship database. You can find scholarships based on your branch, semester, and academic performance. Would you like me to help you search for specific scholarships or explain the application process?";
+      let response = "Great question about scholarships! EduDisha has a comprehensive scholarship database.";
+      if (profile) {
+        const year = profile.studentProfile.personalInfo.academicYear;
+        response += ` Based on your profile (${year}), I can help you find relevant scholarships.`;
+      }
+      return responsePrefix + response + " Would you like me to help you search for specific scholarships or explain the application process?";
     }
 
     if (input.includes('skill') || input.includes('skills')) {
-      return "Skills development is crucial for GTU students! Our platform offers skill exchange where you can teach others what you're good at and learn new skills. You can also track your progress and get personalized recommendations. What skill are you interested in learning or teaching?";
+      let response = "Skills development is crucial for GTU students! Our platform offers skill exchange where you can teach others what you're good at and learn new skills.";
+      if (profile) {
+        const interests = profile.studentProfile.learningPreferences.interests;
+        const teachingInterest = profile.studentProfile.socialPreferences.teachingInterest;
+        
+        if (interests.length > 0) {
+          response += ` I see you're interested in ${interests.join(", ")}.`;
+        }
+        
+        if (teachingInterest === 'Yes, confident') {
+          response += " You seem ready to mentor others!";
+        } else if (teachingInterest === 'Yes, but beginner') {
+          response += " You could start by helping peers with basics.";
+        }
+      }
+      return responsePrefix + response + " What skill are you interested in learning or teaching?";
     }
 
     if (input.includes('academic') || input.includes('study') || input.includes('exam')) {
-      return "Academic success is our priority! EduDisha helps you organize your study materials, track assignments, and connect with study groups. You can also get AI-powered study recommendations. What subject or topic are you struggling with?";
+      let response = "Academic success is our priority! EduDisha helps you organize your study materials, track assignments, and connect with study groups.";
+      if (profile) {
+        const studyStyle = profile.studentProfile.learningPreferences.studyStyle;
+        const pace = profile.studentProfile.learningPreferences.learningPace;
+        const goal = profile.studentProfile.learningPreferences.currentGoal;
+        
+        response += ` Based on your profile, I know you prefer ${studyStyle.toLowerCase()} and learn at a ${pace.toLowerCase()} pace.`;
+        
+        if (goal === 'Crack exams') {
+          response += " Since your goal is to crack exams, I recommend focusing on practice tests and revision notes.";
+        }
+      }
+      return responsePrefix + response + " What subject or topic are you working on?";
     }
 
     if (input.includes('motivation') || input.includes('motivate')) {
-      return "Staying motivated is key to success! Our motivation section has daily quotes, success stories from GTU alumni, and tips for maintaining focus. Remember, every great achievement starts with small, consistent steps. What's been challenging you lately?";
+      let response = "Staying motivated is key to success! Our motivation section has daily quotes, success stories from GTU alumni, and tips for maintaining focus.";
+      if (profile) {
+        const motivationType = profile.studentProfile.learningPreferences.motivationType;
+        
+        if (motivationType === 'Competition') {
+          response += " I know you're motivated by competition - try joining study challenges!";
+        } else if (motivationType === 'Self-growth') {
+          response += " Your focus on self-growth is admirable - every step forward counts!";
+        } else if (motivationType === 'Rewards / recognition') {
+          response += " You're motivated by recognition - check out our badge system!";
+        }
+      }
+      return responsePrefix + response + " What's been challenging you lately?";
     }
 
     if (input.includes('hello') || input.includes('hi') || input.includes('hey')) {
-      return "Hello! 👋 I'm EduBot, your friendly AI assistant for EduDisha. I'm here to help you navigate your academic journey, find resources, and achieve your goals. What would you like to know about our platform or GTU studies?";
+      if (profile) {
+        return aiProfileService.getPersonalizedGreeting(user!.id) + " What can I help you with today?";
+      }
+      return responsePrefix + "Hello! 👋 I'm EduBot, your friendly AI assistant for EduDisha. I'm here to help you navigate your academic journey, find resources, and achieve your goals. What would you like to know about our platform or GTU studies?";
     }
 
-    return "That's an interesting question! While I'm still learning about all aspects of GTU education, I'd be happy to help you find relevant resources on EduDisha. Could you tell me more about what you're looking for? I can guide you to scholarships, skill exchanges, academic planning, or motivation content.";
+    if (input.includes('recommend') || input.includes('suggestion')) {
+      if (profile) {
+        const recommendations = aiProfileService.getStudyRecommendations(user!.id);
+        return responsePrefix + "Here are some personalized recommendations for you:\n\n" + recommendations.join("\n");
+      }
+    }
+
+    let response = "That's an interesting question! While I'm still learning about all aspects of GTU education, I'd be happy to help you find relevant resources on EduDisha.";
+    if (profile) {
+      const explanationPref = profile.studentProfile.communicationStyle.explanationPreference;
+      if (explanationPref === 'Simple & short') {
+        response = "Good question! I can help you find what you need on EduDisha.";
+      } else if (explanationPref === 'Detailed & deep') {
+        response += " I can provide comprehensive guidance based on your learning preferences.";
+      }
+    }
+    
+    return responsePrefix + response + " Could you tell me more about what you're looking for? I can guide you to scholarships, skill exchanges, academic planning, or motivation content.";
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {

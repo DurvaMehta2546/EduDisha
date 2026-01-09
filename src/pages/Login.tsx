@@ -42,6 +42,7 @@ const Login = () => {
 
     try {
       await login(formData.email, formData.password);
+      // Let OnboardingCheck handle the redirection based on onboarding status
       navigate('/dashboard');
     } catch (err) {
       setError('Invalid email or password');
@@ -55,6 +56,7 @@ const Login = () => {
     setIsLoading(true);
     try {
       await loginWithGoogle();
+      // Let OnboardingCheck handle the redirection based on onboarding status
       navigate('/dashboard');
     } catch (err) {
       setError('Google login failed');
@@ -68,6 +70,7 @@ const Login = () => {
     setIsLoading(true);
     try {
       await loginWithGitHub();
+      // Let OnboardingCheck handle the redirection based on onboarding status
       navigate('/dashboard');
     } catch (err) {
       setError('GitHub login failed');
@@ -89,8 +92,12 @@ const Login = () => {
         {/* Header */}
         <div className="text-center mb-8">
           <div className="flex items-center justify-center gap-3 mb-4">
-            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary-gradient">
-              <GraduationCap className="h-6 w-6 text-primary-foreground" />
+            <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-gradient-to-br from-primary/15 to-accent/15 border border-primary/30">
+              <img 
+                src="/logo.svg" 
+                alt="EduDisha Logo" 
+                className="h-8 w-8" 
+              />
             </div>
             <h1 className="font-display text-2xl font-bold text-foreground">EduDisha</h1>
           </div>
@@ -255,13 +262,39 @@ const Login = () => {
 
         {/* Demo Credentials */}
         <Card className="mt-4 p-4 bg-muted/50 border-dashed">
-          <div className="flex items-center gap-2 mb-2">
+          <div className="flex items-center gap-2 mb-3">
             <Sparkles className="h-4 w-4 text-primary" />
             <span className="text-sm font-medium text-foreground">Demo Credentials</span>
           </div>
-          <div className="text-xs text-muted-foreground space-y-1">
-            <p><strong>Student:</strong> student@gtu.edu.in / password123</p>
-            <p><strong>Admin:</strong> admin@edudisha.com / admin123</p>
+          <div className="space-y-2">
+            <div className="flex items-center justify-between p-2 rounded bg-card border">
+              <div className="text-xs">
+                <p className="font-medium">Student Account</p>
+                <p className="text-muted-foreground">nakuldesai2006@gmail.com / 123456</p>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setFormData({ email: 'nakuldesai2006@gmail.com', password: '123456' })}
+                className="text-xs h-7"
+              >
+                Use
+              </Button>
+            </div>
+            <div className="flex items-center justify-between p-2 rounded bg-card border">
+              <div className="text-xs">
+                <p className="font-medium">Admin Account</p>
+                <p className="text-muted-foreground">admin@edudisha.com / admin123</p>
+              </div>
+              <Button
+                size="sm"
+                variant="outline"
+                onClick={() => setFormData({ email: 'admin@edudisha.com', password: 'admin123' })}
+                className="text-xs h-7"
+              >
+                Use
+              </Button>
+            </div>
           </div>
         </Card>
       </div>
