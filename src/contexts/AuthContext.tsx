@@ -1,9 +1,6 @@
-
 import { createContext, useContext, useState, useEffect, ReactNode } from 'react';
-import { onAuthStateChanged, User as FirebaseUser } from '@/firebase/auth';
-import { auth } from '@/firebase/config';
-import { signInWithGoogle, signOutUser } from '@/firebase/auth';
-import { createUserProfile, getUserProfile, updateUserProfile } from '@/firebase/profile';
+import { authService, RegisterData, LoginData } from '@/services/auth.service';
+import { profileService } from '@/services/profile.service';
 
 export interface User {
   id: string;
@@ -23,9 +20,9 @@ interface AuthContextType {
   isLoading: boolean;
   isAuthenticated: boolean;
   login: (email: string, password: string) => Promise<void>;
-  loginWithGoogle: () => Promise<void>;
+  loginWithGoogle: (googleToken: string) => Promise<void>;
   loginWithGitHub: () => Promise<void>;
-  register: (userData: any) => Promise<void>;
+  register: (userData: RegisterData) => Promise<void>;
   logout: () => void;
   updateProfile: (data: Partial<User>) => Promise<void>;
 }
@@ -49,93 +46,82 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   const [isLoading, setIsLoading] = useState(true);
 
   useEffect(() => {
-    const unsubscribe = onAuthStateChanged(auth, async (firebaseUser: FirebaseUser | null) => {
-      if (firebaseUser) {
-        // User is signed in.
-        const profile = await getUserProfile(firebaseUser.uid);
-        if (profile) {
-          setUser({
-            id: firebaseUser.uid,
-            email: firebaseUser.email,
-            name: firebaseUser.displayName,
-            avatar: firebaseUser.photoURL,
-            ...profile,
-          } as User);
-        } else {
-          // Create a new profile for the user
-          const newUserProfile = {
-            role: 'student',
-            university: 'Gujarat Technological University',
-            semester: 'Semester 1',
-            branch: 'Not specified',
-            verified: false,
-            createdAt: new Date().toISOString(),
-          };
-          await createUserProfile(firebaseUser.uid, newUserProfile);
-          setUser({
-            id: firebaseUser.uid,
-            email: firebaseUser.email,
-            name: firebaseUser.displayName,
-            avatar: firebaseUser.photoURL,
-            ...newUserProfile,
-          } as User);
+    // Check if user is logged in on mount
+    const checkAuth = async () => {
+      const token = localStorage.getItem('token');
+      if (token) {
+        try {
+          const response = await authService.getMe();
+          setUser(response.user);
+        } catch (error) {
+          console.error('Auth check failed:', error);
+          localStorage.removeItem('token');
         }
-      } else {
-        // User is signed out.
-        setUser(null);
       }
       setIsLoading(false);
-    });
+    };
 
-    return () => unsubscribe();
+    checkAuth();
   }, []);
 
   const login = async (email: string, password: string) => {
-    // This will be implemented later
-    console.log(email, password);
-    throw new Error('Email/password login not implemented yet.');
-  };
-
-  const loginWithGoogle = async () => {
     setIsLoading(true);
     try {
-      await signInWithGoogle();
-    } catch (error) {
-      console.error(error);
-      throw new Error('Google login failed');
+      const response = await authService.login({ email, password });
+      setUser(response.user);
+    } catch (error: any) {
+      console.error('Login error:', error);
+      throw new Error(error.response?.data?.message || 'Login failed');
     } finally {
-        // The onAuthStateChanged listener will handle setting the user and loading state
+      setIsLoading(false);
+    }
+  };
+
+  const loginWithGoogle = async (googleToken: string) => {
+    setIsLoading(true);
+    try {
+      const response = await authService.googleAuth(googleToken);
+      setUser(response.user);
+    } catch (error: any) {
+      console.error('Google login error:', error);
+      throw new Error(error.response?.data?.message || 'Google login failed');
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const loginWithGitHub = async () => {
-    // This will be implemented later
     throw new Error('GitHub login not implemented yet.');
   };
 
-  const register = async (userData: any) => {
-    // This will be implemented later
-    console.log(userData);
-    throw new Error('Registration not implemented yet.');
-  };
-
-  const logout = async () => {
+  const register = async (userData: RegisterData) => {
     setIsLoading(true);
     try {
-        await signOutUser();
-    } catch(error) {
-        console.error(error);
+      const response = await authService.register(userData);
+      setUser(response.user);
+    } catch (error: any) {
+      console.error('Registration error:', error);
+      throw new Error(error.response?.data?.message || 'Registration failed');
     } finally {
-        setIsLoading(false);
+      setIsLoading(false);
     }
+  };
+
+  const logout = () => {
+    authService.logout();
+    setUser(null);
   };
 
   const updateProfile = async (data: Partial<User>) => {
     if (!user) return;
     
-    await updateUserProfile(user.id, data);
-    const updatedUser = { ...user, ...data };
-    setUser(updatedUser);
+    try {
+      const response = await profileService.updateProfile(data);
+      setUser(response.profile);
+    } catch (error: any) {
+      console.error('Update profile error:', error);
+      throw new Error(error.response?.data?.message || 'Profile update failed');
+    }
   };
 
   const value = {
