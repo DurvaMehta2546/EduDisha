@@ -1,3 +1,5 @@
+
+import { useState, useEffect } from 'react';
 import DashboardLayout from "@/components/dashboard/DashboardLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -12,8 +14,45 @@ import {
   LogOut,
   Save
 } from "lucide-react";
+import { useAuth } from '@/contexts/AuthContext';
 
 const Settings = () => {
+  const { user, updateProfile, logout } = useAuth();
+  const [profileData, setProfileData] = useState({
+    name: '',
+    branch: '',
+    semester: '',
+  });
+
+  useEffect(() => {
+    if (user) {
+      setProfileData({
+        name: user.name || '',
+        branch: user.branch || '',
+        semester: user.semester || '',
+      });
+    }
+  }, [user]);
+
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { id, value } = e.target;
+    setProfileData(prev => ({ ...prev, [id]: value }));
+  };
+
+  const handleSaveChanges = async () => {
+    try {
+      await updateProfile(profileData);
+      // Optionally, show a success message
+    } catch (error) {
+      console.error('Error updating profile:', error);
+      // Optionally, show an error message
+    }
+  };
+
+  if (!user) {
+    return <div>Loading...</div>;
+  }
+
   return (
     <DashboardLayout 
       title="Settings" 
@@ -34,7 +73,7 @@ const Settings = () => {
 
           <div className="flex items-center gap-6 mb-6">
             <div className="flex h-20 w-20 items-center justify-center rounded-full bg-primary-gradient text-primary-foreground text-2xl font-bold">
-              RS
+              {user.name?.charAt(0).toUpperCase()}
             </div>
             <div>
               <Button variant="outline" size="sm">Change Photo</Button>
@@ -45,23 +84,23 @@ const Settings = () => {
           <div className="grid gap-4 sm:grid-cols-2">
             <div>
               <Label htmlFor="name">Full Name</Label>
-              <Input id="name" defaultValue="Raj Sharma" className="mt-1.5" />
+              <Input id="name" value={profileData.name} onChange={handleInputChange} className="mt-1.5" />
             </div>
             <div>
               <Label htmlFor="email">Email</Label>
-              <Input id="email" defaultValue="raj.sharma@gmail.com" disabled className="mt-1.5" />
+              <Input id="email" value={user.email || ''} disabled className="mt-1.5" />
             </div>
             <div>
               <Label htmlFor="branch">Branch</Label>
-              <Input id="branch" defaultValue="Computer Engineering" className="mt-1.5" />
+              <Input id="branch" value={profileData.branch} onChange={handleInputChange} className="mt-1.5" />
             </div>
             <div>
               <Label htmlFor="semester">Semester</Label>
-              <Input id="semester" defaultValue="5" className="mt-1.5" />
+              <Input id="semester" value={profileData.semester} onChange={handleInputChange} className="mt-1.5" />
             </div>
           </div>
 
-          <Button className="mt-6">
+          <Button className="mt-6" onClick={handleSaveChanges}>
             <Save className="h-4 w-4 mr-2" />
             Save Changes
           </Button>
@@ -111,21 +150,16 @@ const Settings = () => {
           </div>
 
           <div className="space-y-4">
-            {[
-              { label: "Google Account", status: "Connected", connected: true },
-              { label: "Google Drive", status: "Connected - Notes Storage", connected: true },
-              { label: "Google Calendar", status: "Connected - Reminders", connected: true },
-            ].map((service) => (
-              <div key={service.label} className="flex items-center justify-between py-3 border-b border-border last:border-0">
-                <div>
-                  <p className="font-medium text-foreground">{service.label}</p>
-                  <p className="text-sm text-success">{service.status}</p>
-                </div>
-                <Button variant="outline" size="sm">
-                  {service.connected ? "Disconnect" : "Connect"}
-                </Button>
+            <div className="flex items-center justify-between py-3 border-b border-border last:border-0">
+              <div>
+                <p className="font-medium text-foreground">Google Account</p>
+                <p className="text-sm text-success">Connected</p>
               </div>
-            ))}
+              <Button variant="outline" size="sm" onClick={logout}>
+                <LogOut className="h-4 w-4 mr-2" />
+                Disconnect
+              </Button>
+            </div>
           </div>
         </div>
 
